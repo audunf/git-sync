@@ -19,7 +19,8 @@ BIN := git-sync
 PKG := k8s.io/git-sync
 
 # Where to push the docker image.
-REGISTRY ?= staging-k8s.gcr.io
+# REGISTRY ?= staging-k8s.gcr.io
+REGISTRY ?= eu.gcr.io/nimbus2-199322
 
 # Which architecture to build - see $(ALL_ARCH) for options.
 ARCH ?= amd64
@@ -123,11 +124,15 @@ container-name:
 
 push: .push-$(DOTFILE_IMAGE) push-name
 .push-$(DOTFILE_IMAGE): .container-$(DOTFILE_IMAGE)
-	@gcloud docker -- push $(IMAGE):$(VERSION)
+	# gcloud docker -- push $(IMAGE):$(VERSION) # AF - replaced with below line
+	@docker push $(IMAGE):$(VERSION)
 	@docker images -q $(IMAGE):$(VERSION) > $@
 	@if [ "$(ARCH)" = "amd64" ]; then \
-	    gcloud docker -- push $(LEGACY_IMAGE):$(VERSION); \
+		docker push $(LEGACY_IMAGE):$(VERSION); \
 	fi
+# AF - below was inside above if-statement
+# gcloud docker -- push $(LEGACY_IMAGE):$(VERSION);
+
 
 push-name:
 	@echo "pushed: $(IMAGE):$(VERSION)"
